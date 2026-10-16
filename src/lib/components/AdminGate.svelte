@@ -21,18 +21,18 @@
   <slot />
 {:else}
   <form class="gate comic-card" class:shake={error} on:submit={submit}>
-    <h2>¡Admin only!</h2>
-    <p>Enter the magic word to add points.</p>
+    <h2>¡Kun admin!</h2>
+    <p>Skriv inn det magiske ordet for å legge til poeng.</p>
     <input
       type="password"
       bind:value={pw}
-      placeholder="password"
+      placeholder="passord"
       autocomplete="off"
       autofocus
     />
-    <button class="btn btn--salsa" type="submit">Entrar</button>
+    <button class="btn btn--salsa" type="submit">Logg inn</button>
     {#if error}
-      <p class="err">Wrong password 🌶️</p>
+      <p class="err">Feil passord 🌶️</p>
     {/if}
   </form>
 {/if}

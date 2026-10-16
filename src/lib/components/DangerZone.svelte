@@ -3,8 +3,8 @@
   import { isAdmin } from '$lib/stores';
 
   async function resetAll() {
-    if (!confirm('Reset ALL scores? This clears the game log for everyone. Rosters stay.')) return;
-    if (!confirm('Really sure? There is no undo.')) return;
+    if (!confirm('Nullstille ALLE poeng? Dette tømmer spill-loggen for alle. Lagene beholdes.')) return;
+    if (!confirm('Helt sikker? Dette kan ikke angres.')) return;
     await backend.resetAll();
   }
 
@@ -14,10 +14,10 @@
 </script>
 
 <section class="comic-card danger">
-  <h3>Danger zone 🌶️</h3>
+  <h3>Faresone 🌶️</h3>
   <div class="row">
-    <button class="btn btn--danger" type="button" on:click={resetAll}>Reset all scores</button>
-    <button class="btn btn--ghost" type="button" on:click={logout}>Log out of admin</button>
+    <button class="btn btn--danger" type="button" on:click={resetAll}>Nullstill alle poeng</button>
+    <button class="btn btn--ghost" type="button" on:click={logout}>Logg ut av admin</button>
   </div>
 </section>
 

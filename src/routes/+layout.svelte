@@ -14,12 +14,12 @@
     <img src="{base}/img/{HERO_IMAGE}" alt="Bendik & Emmy" />
     <div class="title">
       <h1>Bemmy DOF</h1>
-      <p class="sub">¡Day of Fun!</p>
+      <p class="sub">¡Fundag!</p>
     </div>
   </div>
   <nav>
     {#if onAdmin}
-      <a class="btn btn--ghost" href="{base}/">← Scoreboard</a>
+      <a class="btn btn--ghost" href="{base}/">← Tavla</a>
     {:else}
       <a class="btn btn--salsa" href="{base}/admin">⚙︎ Admin</a>
     {/if}
@@ -29,8 +29,8 @@
 
 {#if usingMockBackend}
   <div class="mock-warn">
-    ⚠️ Running in local mock mode — scores don't sync across devices. Paste your Firebase config
-    into <code>src/lib/config.ts</code> to enable sync.
+    ⚠️ Kjører i lokal testmodus — poeng synkroniseres ikke mellom enheter. Lim inn Firebase-config
+    i <code>src/lib/config.ts</code> for å slå på synkronisering.
   </div>
 {/if}
 
@@ -39,7 +39,7 @@
 </main>
 
 <footer>
-  <p>Hecho con 🌮 para Bendik & Emmy</p>
+  <p>Laget med 🌮 til Bendik & Emmy</p>
 </footer>
 
 <style>

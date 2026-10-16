@@ -21,14 +21,14 @@ export const TEAMS = ['bendik', 'emmy'] as const;
 export type Team = (typeof TEAMS)[number];
 
 export const TEAM_LABEL: Record<Team, string> = {
-  bendik: 'Team Bendik',
-  emmy: 'Team Emmy'
+  bendik: 'Lag Bendik',
+  emmy: 'Lag Emmy'
 };
 
 // Pick a hero photo for each team column. Swap filenames as desired.
 export const TEAM_HERO: Record<Team, string> = {
-  bendik: '473596938_10170545326890504_5974434238877714690_n.jpg',
-  emmy: '472336998_10170345119905504_4885915971126676922_n.jpg'
+  bendik: '555529148_10162741918470376_8093649230597921835_n.jpg',
+  emmy: '473827575_10170595095850504_7262264155085970034_n.jpg'
 };
 
 export const HERO_IMAGE = 'bemmy_1.jpg';
