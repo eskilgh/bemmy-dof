@@ -20,13 +20,37 @@
 
   // Deterministic tilt per photo so hydration matches SSR output.
   const tilt = (i: number) => ((i * 37) % 11) - 5; // range: -5..5 degrees
+
+  let lightboxSrc: string | null = null;
+
+  function open(src: string) {
+    lightboxSrc = src;
+  }
+
+  function close() {
+    lightboxSrc = null;
+  }
+
+  function onKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') close();
+  }
 </script>
+
+<svelte:window on:keydown={onKeydown} />
 
 <section class="strip" aria-label="Photo strip">
   <div class="viewport">
     <div class="track">
       {#each [...photos, ...photos] as src, i}
-        <figure class="polaroid" style="transform: rotate({tilt(i)}deg)">
+        <figure
+          class="polaroid"
+          style="transform: rotate({tilt(i)}deg)"
+          role="button"
+          tabindex="0"
+          aria-label="Enlarge photo"
+          on:click={() => open(src)}
+          on:keydown={(e) => e.key === 'Enter' && open(src)}
+        >
           <span class="tape" />
           <img src="{base}/img/{src}" alt="" loading="lazy" />
         </figure>
@@ -34,6 +58,14 @@
     </div>
   </div>
 </section>
+
+{#if lightboxSrc}
+  <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+  <div class="lightbox" on:click={close} role="dialog" aria-modal="true" aria-label="Photo enlarged">
+    <button class="close" on:click={close} aria-label="Close">&times;</button>
+    <img src="{base}/img/{lightboxSrc}" alt="" on:click|stopPropagation />
+  </div>
+{/if}
 
 <style>
   .strip {
@@ -90,6 +122,7 @@
     border-radius: 2px;
     box-shadow: 4px 4px 0 var(--ink);
     margin: 0;
+    cursor: pointer;
     transition: transform 0.3s ease;
   }
   .polaroid:hover {
@@ -112,5 +145,39 @@
     height: 14px;
     background: rgba(255, 220, 100, 0.6);
     border: 1px solid rgba(0, 0, 0, 0.3);
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .lightbox img {
+    max-width: min(90vw, 700px);
+    max-height: 90vh;
+    object-fit: contain;
+    border: 4px solid #fff;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+  }
+  .close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2.5rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 8px;
+    opacity: 0.8;
+  }
+  .close:hover {
+    opacity: 1;
   }
 </style>
