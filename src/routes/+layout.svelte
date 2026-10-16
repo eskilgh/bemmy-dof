@@ -16,15 +16,15 @@
   <div class="hero">
     <img src="{base}/img/{HERO_IMAGE}" alt="Bendik & Emmy" />
     <div class="title">
-      <h1>Bemmy DOF</h1>
-      <p class="sub">¡Day of fun!</p>
+      <h1>Bemmy Bemmy Bemmy</h1>
+      <p class="sub">DOF DOF DOF</p>
     </div>
   </div>
   <nav>
     {#if onAdmin || onPlan}
       <a class="btn btn--ghost" href="{base}/">← Tavla</a>
     {:else}
-      <a class="btn btn--lime" href="{base}/plan">📅 Plan</a>
+      <a class="btn btn--lime" href="{base}/plan">📅 Plan for dagen</a>
       <a class="btn btn--salsa" href="{base}/admin">⚙︎ Admin</a>
     {/if}
   </nav>

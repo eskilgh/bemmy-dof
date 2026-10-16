@@ -3,6 +3,7 @@
 
   type Stop = {
     time: string;
+    end?: string;
     title: string;
     where?: string;
     note?: string;
@@ -13,7 +14,7 @@
 
   const plan: Item[] = [
     {
-      time: '07–08',
+      time: '8',
       title: 'Frokost',
       where: 'Hjem til Emmy og Bendik',
       icon: '☕',
@@ -69,6 +70,7 @@
     { kind: 'transit', text: 'Gå (1 min) →' },
     {
       time: '20:30',
+      end: '23:59',
       title: 'Middag & kåring av vinnerlag! 🏆',
       where: 'Theka — indisk street food',
       icon: '🍛',
@@ -95,17 +97,19 @@
   };
 
   const schedule: (Timed | Transit)[] = (() => {
-    const stopIdx: number[] = [];
+    const stops: { idx: number; start: number | null }[] = [];
     plan.forEach((x, i) => {
-      if (!isTransit(x)) stopIdx.push(i);
+      if (!isTransit(x)) stops.push({ idx: i, start: parseRange(x.time)[0] });
     });
     return plan.map((item, i): Timed | Transit => {
       if (isTransit(item)) return item;
       const [startMin, rawEnd] = parseRange(item.time);
-      let endMin = rawEnd;
+      let endMin = item.end ? parseOne(item.end) : rawEnd;
       if (endMin === null) {
-        const nextI = stopIdx.find((n) => n > i);
-        if (nextI !== undefined) endMin = parseRange((plan[nextI] as Stop).time)[0];
+        const next = stops.find(
+          (s) => s.idx > i && s.start !== null && (startMin === null || s.start > startMin),
+        );
+        if (next) endMin = next.start;
       }
       return { ...item, startMin, endMin };
     });
