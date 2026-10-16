@@ -68,9 +68,10 @@ Without a `databaseURL` in `config.ts`, the app runs in a mock mode
 
 ## Photos
 
-Source photos live in `assets/img/` and are copied to `static/img/` so
-SvelteKit serves them. To swap the hero or per-team photos, edit `HERO_IMAGE`
-and `TEAM_HERO` in `src/lib/config.ts`.
+Photos live in `static/img/` (SvelteKit serves everything there at the site
+root). To swap the hero or per-team photos, edit `HERO_IMAGE` and `TEAM_HERO`
+in `src/lib/config.ts`. The polaroid footer strip pulls from a hand-picked
+list in `src/lib/components/PhotoStrip.svelte`.
 
 ## Deploy
 
