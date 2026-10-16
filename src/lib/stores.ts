@@ -1,6 +1,5 @@
 import { writable, derived, type Readable } from 'svelte/store';
-import { browser } from '$app/environment';
-import { backend } from './firebase';
+import { backend, auth } from './firebase';
 import { TEAMS, type Team } from './config';
 import type { LogEntry, TeamsState } from './types';
 
@@ -20,13 +19,7 @@ export const scores: Readable<Record<Team, number>> = derived(log, ($log) => {
   return totals;
 });
 
-const ADMIN_KEY = 'bemmy-admin';
-const initialAdmin = browser && localStorage.getItem(ADMIN_KEY) === '1';
-export const isAdmin = writable<boolean>(initialAdmin);
-
-if (browser) {
-  isAdmin.subscribe((v) => {
-    if (v) localStorage.setItem(ADMIN_KEY, '1');
-    else localStorage.removeItem(ADMIN_KEY);
-  });
-}
+// Admin state is now driven by Firebase Auth. Password never lives in the
+// bundle — Firebase persists the session in browser storage automatically.
+export const isAdmin = writable<boolean>(false);
+auth.onChange((signedIn) => isAdmin.set(signedIn));

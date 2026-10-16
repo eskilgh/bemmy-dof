@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { backend } from '$lib/firebase';
-  import { isAdmin } from '$lib/stores';
+  import { backend, auth } from '$lib/firebase';
 
   async function resetAll() {
     if (!confirm('Nullstille ALLE poeng? Dette tømmer spill-loggen for alle. Lagene beholdes.')) return;
@@ -8,8 +7,8 @@
     await backend.resetAll();
   }
 
-  function logout() {
-    isAdmin.set(false);
+  async function logout() {
+    await auth.signOut();
   }
 </script>
 

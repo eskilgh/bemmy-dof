@@ -9,8 +9,21 @@ import {
   remove,
   type Database
 } from 'firebase/database';
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  type Auth
+} from 'firebase/auth';
 import { browser } from '$app/environment';
-import { firebaseConfig, isFirebaseConfigured, TEAMS, type Team } from './config';
+import {
+  ADMIN_EMAIL,
+  firebaseConfig,
+  isFirebaseConfigured,
+  TEAMS,
+  type Team
+} from './config';
 import type { LogEntry, Member, TeamsState } from './types';
 
 type TeamsListener = (teams: TeamsState) => void;
@@ -28,18 +41,22 @@ interface Backend {
   resetAll(): Promise<void>;
 }
 
+export interface AuthApi {
+  onChange(cb: (signedIn: boolean) => void): () => void;
+  signIn(password: string): Promise<void>;
+  signOut(): Promise<void>;
+}
+
 const emptyTeams = (): TeamsState => ({ bendik: [], emmy: [] });
 
-function createFirebaseBackend(): Backend {
-  const app: FirebaseApp = initializeApp(firebaseConfig);
+function createFirebaseBackend(app: FirebaseApp): Backend {
   const db: Database = getDatabase(app);
-
   const teamsRef = ref(db, 'teams');
   const logRef = ref(db, 'log');
 
   return {
     subscribeTeams(cb) {
-      const unsub = onValue(teamsRef, (snap) => {
+      return onValue(teamsRef, (snap) => {
         const raw = (snap.val() ?? {}) as Record<string, { members?: Record<string, { name: string }> }>;
         const result = emptyTeams();
         for (const team of TEAMS) {
@@ -50,17 +67,15 @@ function createFirebaseBackend(): Backend {
         }
         cb(result);
       });
-      return unsub;
     },
     subscribeLog(cb) {
-      const unsub = onValue(logRef, (snap) => {
+      return onValue(logRef, (snap) => {
         const raw = (snap.val() ?? {}) as Record<string, Omit<LogEntry, 'id'>>;
         const entries = Object.entries(raw)
           .map(([id, e]) => ({ id, ...e }))
           .sort((a, b) => b.timestamp - a.timestamp);
         cb(entries);
       });
-      return unsub;
     },
     async addMember(team, name) {
       const newRef = push(ref(db, `teams/${team}/members`));
@@ -86,6 +101,21 @@ function createFirebaseBackend(): Backend {
     },
     async resetAll() {
       await set(logRef, null);
+    }
+  };
+}
+
+function createFirebaseAuth(app: FirebaseApp): AuthApi {
+  const auth: Auth = getAuth(app);
+  return {
+    onChange(cb) {
+      return onAuthStateChanged(auth, (user) => cb(user !== null));
+    },
+    async signIn(password) {
+      await signInWithEmailAndPassword(auth, ADMIN_EMAIL, password);
+    },
+    async signOut() {
+      await signOut(auth);
     }
   };
 }
@@ -172,8 +202,20 @@ function createMockBackend(): Backend {
   };
 }
 
-export const backend: Backend = isFirebaseConfigured
-  ? createFirebaseBackend()
-  : createMockBackend();
+// In mock mode there's no backend to protect, so admin is always on.
+function createMockAuth(): AuthApi {
+  return {
+    onChange(cb) {
+      cb(true);
+      return () => {};
+    },
+    async signIn() {},
+    async signOut() {}
+  };
+}
 
+const app: FirebaseApp | null = isFirebaseConfigured ? initializeApp(firebaseConfig) : null;
+
+export const backend: Backend = app ? createFirebaseBackend(app) : createMockBackend();
+export const auth: AuthApi = app ? createFirebaseAuth(app) : createMockAuth();
 export const usingMockBackend = !isFirebaseConfigured;

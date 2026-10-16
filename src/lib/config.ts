@@ -1,7 +1,9 @@
-export const ADMIN_PASSWORD = 'bemmy';
+// Email used when calling Firebase Auth's signInWithEmailAndPassword.
+// Doesn't need to be a real address — just must match the user you create in
+// Firebase console → Authentication → Users. The real password lives on
+// Firebase's servers, never in this bundle.
+export const ADMIN_EMAIL = 'admin@bemmy-dof.local';
 
-// From Firebase console → Project settings → Your apps.
-// databaseURL comes from Build → Realtime Database (fill in after creating).
 export const firebaseConfig = {
   apiKey: 'YOUR_API_KEY',
   authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
