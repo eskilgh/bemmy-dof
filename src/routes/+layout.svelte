@@ -24,7 +24,7 @@
     {#if onAdmin || onPlan}
       <a class="btn btn--ghost" href="{base}/">← Tavla</a>
     {:else}
-      <a class="btn btn--lime" href="{base}/plan">📅 Plan for dagen</a>
+      <a class="btn btn--lime" href="{base}/plan">📅 Plan</a>
       <a class="btn btn--salsa" href="{base}/admin">⚙︎ Admin</a>
     {/if}
   </nav>
@@ -89,9 +89,17 @@
     font-size: 0.95rem;
     opacity: 0.75;
   }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
   nav .btn {
     font-size: 0.9rem;
     padding: 8px 12px;
+    white-space: nowrap;
   }
   .mock-warn {
     background: #fff6c2;
