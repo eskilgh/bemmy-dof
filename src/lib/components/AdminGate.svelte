@@ -1,18 +1,24 @@
 <script lang="ts">
   import { isAdmin } from '$lib/stores';
-  import { ADMIN_PASSWORD } from '$lib/config';
+  import { auth } from '$lib/firebase';
 
   let pw = '';
-  let error = false;
+  let error = '';
+  let submitting = false;
 
-  function submit(e: Event) {
+  async function submit(e: Event) {
     e.preventDefault();
-    if (pw === ADMIN_PASSWORD) {
-      isAdmin.set(true);
+    if (!pw) return;
+    submitting = true;
+    error = '';
+    try {
+      await auth.signIn(pw);
       pw = '';
-    } else {
-      error = true;
-      setTimeout(() => (error = false), 500);
+    } catch {
+      error = 'Feil passord 🌶️';
+      setTimeout(() => (error = ''), 600);
+    } finally {
+      submitting = false;
     }
   }
 </script>
@@ -22,17 +28,19 @@
 {:else}
   <form class="gate comic-card" class:shake={error} on:submit={submit}>
     <h2>¡Kun admin!</h2>
-    <p>Skriv inn det magiske ordet for å legge til poeng.</p>
+    <p>Skriv inn passordet for å legge til poeng.</p>
     <input
       type="password"
       bind:value={pw}
       placeholder="passord"
-      autocomplete="off"
+      autocomplete="current-password"
       autofocus
     />
-    <button class="btn btn--salsa" type="submit">Logg inn</button>
+    <button class="btn btn--salsa" type="submit" disabled={submitting || !pw}>
+      {submitting ? '…' : 'Logg inn'}
+    </button>
     {#if error}
-      <p class="err">Feil passord 🌶️</p>
+      <p class="err">{error}</p>
     {/if}
   </form>
 {/if}
