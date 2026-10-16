@@ -4,6 +4,7 @@
   import { page } from '$app/stores';
   import { HERO_IMAGE } from '$lib/config';
   import { usingMockBackend } from '$lib/firebase';
+  import PhotoStrip from '$lib/components/PhotoStrip.svelte';
 
   $: onAdmin = $page.url.pathname.endsWith('/admin') || $page.url.pathname.endsWith('/admin/');
 </script>
@@ -37,6 +38,8 @@
 <main>
   <slot />
 </main>
+
+<PhotoStrip />
 
 <footer>
   <p>Laget med 🌮 til Bendik & Emmy</p>
