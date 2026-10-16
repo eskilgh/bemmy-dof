@@ -15,7 +15,7 @@
     <img src="{base}/img/{HERO_IMAGE}" alt="Bendik & Emmy" />
     <div class="title">
       <h1>Bemmy DOF</h1>
-      <p class="sub">¡Fundag!</p>
+      <p class="sub">¡Day of fun!</p>
     </div>
   </div>
   <nav>
