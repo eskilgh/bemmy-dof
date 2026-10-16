@@ -1,25 +1,18 @@
-// All config is read from PUBLIC_* env vars at build time (Vite inlines them).
-// Locally: copy .env.example to .env and fill in. In CI: GitHub Actions
-// writes them from repo secrets. If a var is missing, the app falls through
-// to local mock mode (no cross-device sync) rather than failing at startup.
+export const ADMIN_PASSWORD = 'bemmy';
 
-const env = import.meta.env;
-
-export const ADMIN_PASSWORD = env.PUBLIC_ADMIN_PASSWORD ?? 'bemmy';
-
+// From Firebase console → Project settings → Your apps.
+// databaseURL comes from Build → Realtime Database (fill in after creating).
 export const firebaseConfig = {
-  apiKey: env.PUBLIC_FIREBASE_API_KEY ?? '',
-  authDomain: env.PUBLIC_FIREBASE_AUTH_DOMAIN ?? '',
-  databaseURL: env.PUBLIC_FIREBASE_DATABASE_URL ?? '',
-  projectId: env.PUBLIC_FIREBASE_PROJECT_ID ?? '',
-  storageBucket: env.PUBLIC_FIREBASE_STORAGE_BUCKET ?? '',
-  messagingSenderId: env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? '',
-  appId: env.PUBLIC_FIREBASE_APP_ID ?? ''
+  apiKey: 'YOUR_API_KEY',
+  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
+  databaseURL: '',
+  projectId: 'bemmy-dof',
+  storageBucket: 'YOUR_PROJECT_ID.firebasestorage.app',
+  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+  appId: 'YOUR_APP_ID'
 };
 
-export const isFirebaseConfigured = Boolean(
-  firebaseConfig.apiKey && firebaseConfig.databaseURL
-);
+export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.databaseURL);
 
 export const TEAMS = ['bendik', 'emmy'] as const;
 export type Team = (typeof TEAMS)[number];
