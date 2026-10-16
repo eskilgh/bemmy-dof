@@ -17,21 +17,21 @@
   async function saveEdit() {
     if (!editingId) return;
     await backend.updateLogEntry(editingId, {
-      game: editGame.trim() || '(no name)',
+      game: editGame.trim() || '(uten navn)',
       points: Number(editPoints) || 0
     });
     editingId = null;
   }
 
   async function del(id: string) {
-    if (!confirm('Delete this entry?')) return;
+    if (!confirm('Slette denne oppføringen?')) return;
     await backend.deleteLogEntry(id);
   }
 
   async function undoLast() {
     const latest = $log[0];
     if (!latest) return;
-    if (!confirm(`Undo "${latest.game}" (${latest.points > 0 ? '+' : ''}${latest.points})?`)) return;
+    if (!confirm(`Angre "${latest.game}" (${latest.points > 0 ? '+' : ''}${latest.points})?`)) return;
     await backend.deleteLogEntry(latest.id);
   }
 
@@ -42,14 +42,14 @@
 
 <section class="comic-card">
   <div class="head">
-    <h3>Edit game log</h3>
+    <h3>Rediger spill-logg</h3>
     <button class="btn btn--ghost" type="button" on:click={undoLast} disabled={$log.length === 0}>
-      ↶ Undo last
+      ↶ Angre siste
     </button>
   </div>
 
   {#if $log.length === 0}
-    <p class="empty">No entries yet.</p>
+    <p class="empty">Ingen oppføringer ennå.</p>
   {:else}
     <ul>
       {#each $log as e (e.id)}
@@ -58,7 +58,7 @@
             <div class="edit">
               <input type="text" bind:value={editGame} />
               <input type="number" bind:value={editPoints} step="1" />
-              <button class="mini save" type="button" on:click={saveEdit}>Save</button>
+              <button class="mini save" type="button" on:click={saveEdit}>Lagre</button>
               <button class="mini" type="button" on:click={() => (editingId = null)}>×</button>
             </div>
           {:else}

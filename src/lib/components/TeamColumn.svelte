@@ -23,7 +23,7 @@
     {#each members as m (m.id)}
       <li>{m.name}</li>
     {:else}
-      <li class="empty">(no members yet)</li>
+      <li class="empty">(ingen deltakere ennå)</li>
     {/each}
   </ul>
 </section>

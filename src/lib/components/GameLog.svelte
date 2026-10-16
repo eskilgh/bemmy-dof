@@ -10,9 +10,9 @@
 </script>
 
 <section class="log">
-  <h2>¡Game Log!</h2>
+  <h2>¡Spill-logg!</h2>
   {#if $log.length === 0}
-    <p class="empty">No games played yet. ¡Vamos!</p>
+    <p class="empty">Ingen spill spilt ennå. ¡Vamos!</p>
   {:else}
     <ul>
       {#each $log as entry (entry.id)}

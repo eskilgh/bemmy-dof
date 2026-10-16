@@ -14,7 +14,7 @@
     saving = true;
     try {
       await backend.addLogEntry(team, game.trim(), Number(points) || 0);
-      flash = `¡Added ${points} for ${TEAM_LABEL[team]}!`;
+      flash = `¡La til ${points} til ${TEAM_LABEL[team]}!`;
       game = '';
       points = 10;
       setTimeout(() => (flash = ''), 1800);
@@ -25,7 +25,7 @@
 </script>
 
 <form class="comic-card add" on:submit={submit}>
-  <h3>Add points</h3>
+  <h3>Legg til poeng</h3>
 
   <div class="chips">
     {#each TEAMS as t}
@@ -43,17 +43,17 @@
   </div>
 
   <label>
-    Game name
-    <input type="text" bind:value={game} placeholder="e.g. Taco Toss" required />
+    Navn på spill
+    <input type="text" bind:value={game} placeholder="f.eks. Taco-kast" required />
   </label>
 
   <label>
-    Points <span class="hint">(negative to subtract)</span>
+    Poeng <span class="hint">(negativt for å trekke fra)</span>
     <input type="number" bind:value={points} step="1" required />
   </label>
 
   <button class="btn btn--salsa" type="submit" disabled={saving || !game.trim()}>
-    {saving ? '…' : '¡Score!'}
+    {saving ? '…' : '¡Scoring!'}
   </button>
 
   {#if flash}

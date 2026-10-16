@@ -21,7 +21,7 @@
   }
 
   async function remove(team: Team, m: Member) {
-    if (!confirm(`Remove ${m.name} from ${TEAM_LABEL[team]}?`)) return;
+    if (!confirm(`Fjern ${m.name} fra ${TEAM_LABEL[team]}?`)) return;
     await backend.removeMember(team, m.id);
   }
 
@@ -32,17 +32,17 @@
 </script>
 
 <section class="comic-card">
-  <h3>Roster</h3>
+  <h3>Deltakere</h3>
 
   <form class="add-row" on:submit={addMember}>
-    <input type="text" bind:value={newName} placeholder="Name" required />
+    <input type="text" bind:value={newName} placeholder="Navn" required />
     <select bind:value={newTeam}>
       {#each TEAMS as t}
         <option value={t}>{TEAM_LABEL[t]}</option>
       {/each}
     </select>
     <button class="btn btn--lime" type="submit" disabled={saving || !newName.trim()}>
-      Add
+      Legg til
     </button>
   </form>
 
@@ -55,21 +55,21 @@
             <li>
               <span class="name">{m.name}</span>
               <div class="row-btns">
-                <button type="button" class="mini" on:click={() => move(t, m)} title="Swap teams">
+                <button type="button" class="mini" on:click={() => move(t, m)} title="Bytt lag">
                   ⇄
                 </button>
                 <button
                   type="button"
                   class="mini danger"
                   on:click={() => remove(t, m)}
-                  title="Remove"
+                  title="Fjern"
                 >
                   ✕
                 </button>
               </div>
             </li>
           {:else}
-            <li class="empty">(empty)</li>
+            <li class="empty">(tomt)</li>
           {/each}
         </ul>
       </div>
