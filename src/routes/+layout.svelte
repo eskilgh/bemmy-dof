@@ -1,0 +1,114 @@
+<script lang="ts">
+  import '../app.css';
+  import { base } from '$app/paths';
+  import { page } from '$app/stores';
+  import { HERO_IMAGE } from '$lib/config';
+  import { usingMockBackend } from '$lib/firebase';
+
+  $: onAdmin = $page.url.pathname.endsWith('/admin') || $page.url.pathname.endsWith('/admin/');
+</script>
+
+<div class="papel-strip" />
+<header>
+  <div class="hero">
+    <img src="{base}/img/{HERO_IMAGE}" alt="Bendik & Emmy" />
+    <div class="title">
+      <h1>Bemmy DOF</h1>
+      <p class="sub">¡Day of Fun!</p>
+    </div>
+  </div>
+  <nav>
+    {#if onAdmin}
+      <a class="btn btn--ghost" href="{base}/">← Scoreboard</a>
+    {:else}
+      <a class="btn btn--salsa" href="{base}/admin">⚙︎ Admin</a>
+    {/if}
+  </nav>
+</header>
+<div class="papel-strip" />
+
+{#if usingMockBackend}
+  <div class="mock-warn">
+    ⚠️ Running in local mock mode — scores don't sync across devices. Paste your Firebase config
+    into <code>src/lib/config.ts</code> to enable sync.
+  </div>
+{/if}
+
+<main>
+  <slot />
+</main>
+
+<footer>
+  <p>Hecho con 🌮 para Bendik & Emmy</p>
+</footer>
+
+<style>
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--cream);
+    position: relative;
+  }
+  .hero {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .hero img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    box-shadow: 3px 3px 0 var(--ink);
+    transform: rotate(-4deg);
+  }
+  .title {
+    min-width: 0;
+  }
+  h1 {
+    font-family: 'Bangers', sans-serif;
+    letter-spacing: 2px;
+    font-size: clamp(1.5rem, 7vw, 2.4rem);
+    color: var(--ink);
+    text-shadow: 2px 2px 0 var(--salsa);
+    margin: 0;
+  }
+  .sub {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.75;
+  }
+  nav .btn {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+  .mock-warn {
+    background: #fff6c2;
+    color: #5a4300;
+    border-bottom: 3px solid var(--ink);
+    padding: 8px 14px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .mock-warn code {
+    background: rgba(0, 0, 0, 0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  main {
+    padding: 14px;
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  footer {
+    text-align: center;
+    padding: 24px 14px 40px;
+    opacity: 0.75;
+    font-size: 0.95rem;
+  }
+</style>
