@@ -6,7 +6,9 @@
   import { usingMockBackend } from '$lib/firebase';
   import PhotoStrip from '$lib/components/PhotoStrip.svelte';
 
-  $: onAdmin = $page.url.pathname.endsWith('/admin') || $page.url.pathname.endsWith('/admin/');
+  $: path = $page.url.pathname.replace(/\/$/, '');
+  $: onAdmin = path.endsWith('/admin');
+  $: onPlan = path.endsWith('/plan');
 </script>
 
 <div class="papel-strip" />
@@ -19,9 +21,10 @@
     </div>
   </div>
   <nav>
-    {#if onAdmin}
+    {#if onAdmin || onPlan}
       <a class="btn btn--ghost" href="{base}/">← Tavla</a>
     {:else}
+      <a class="btn btn--lime" href="{base}/plan">📅 Plan</a>
       <a class="btn btn--salsa" href="{base}/admin">⚙︎ Admin</a>
     {/if}
   </nav>
