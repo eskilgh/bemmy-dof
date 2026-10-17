@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  type Alternative = { icon: string; label: string; where: string };
   type Stop = {
     time: string;
     end?: string;
@@ -8,6 +9,7 @@
     where?: string;
     note?: string;
     icon: string;
+    alternatives?: Alternative[];
   };
   type Transit = { kind: 'transit'; text: string };
   type Item = Stop | Transit;
@@ -34,17 +36,13 @@
     },
     { kind: 'transit', text: 'Ca. 25 min — til fots eller buss →' },
     {
-      time: '12',
-      title: 'Barnevennlig aktivitet',
-      where: 'Klosterengaparken — hinderløype eller ballspill',
+      time: '12:30',
+      title: 'Barnevennlig aktivitet eller karaokegruble',
       icon: '🤸',
-    },
-    { kind: 'transit', text: '37-bussen Galgeberg → Helsfyr (ca. 8 min) →' },
-    {
-      time: '13',
-      title: 'Karaokegruble',
-      where: 'Etterstadsletta 23A — «Tacobit for beat»',
-      icon: '🎤',
+      alternatives: [
+        { icon: '🤸', label: 'Barnevennlig aktivitet', where: 'Klosterengaparken — hinderløype eller ballspill' },
+        { icon: '🎤', label: 'Karaokegruble', where: 'Etterstadsletta 23A — «Tacobit for beat»' },
+      ],
     },
     { kind: 'transit', text: '21-bussen Helsfyr → Gladengveien (ca. 3 min) →' },
     {
@@ -173,6 +171,17 @@
             {#if active}<span class="now-badge">NÅ</span>{/if}
           </div>
           {#if item.where}<p class="where">{item.where}</p>{/if}
+          {#if 'alternatives' in item && item.alternatives}
+            <ul class="alternatives">
+              {#each item.alternatives as alt, i}
+
+                <li class="alt-option">
+                  <span class="alt-icon" aria-hidden="true">{alt.icon}</span>
+                  <span><strong>{alt.label}</strong> — {alt.where}</span>
+                </li>
+              {/each}
+            </ul>
+          {/if}
           {#if item.note}<p class="note">{item.note}</p>{/if}
         </div>
       </li>
@@ -306,6 +315,24 @@
     font-size: 0.95rem;
   }
 
+  .alternatives {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .alt-option {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 0.95rem;
+  }
+  .alt-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
   .transit {
     margin: 2px 0 12px 72px;
     font-size: 0.9rem;
