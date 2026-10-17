@@ -1,9 +1,10 @@
 <script lang="ts">
   import { base } from '$app/paths';
+  import { onMount } from 'svelte';
 
   // The 15 photos minus the 3 already used (hero + two team columns), so the
   // strip feels like "other glimpses" rather than repeats of what's on screen.
-  const photos = [
+  let photos = [
     '468435959_10169664733310504_654137745890156824_n.jpg',
     '468555241_10169734825590504_1236203163763119461_n.jpg',
     '468596547_10161549507720376_1338764354268861956_n.jpg',
@@ -23,24 +24,92 @@
 
   let lightboxSrc: string | null = null;
 
-  function open(src: string) {
-    lightboxSrc = src;
+  function close() { lightboxSrc = null; }
+  function onKeydown(e: KeyboardEvent) { if (e.key === 'Escape') close(); }
+
+  // JS-driven scroll so drag can take over the same transform.
+  let track: HTMLDivElement;
+  let scrollX = 0;
+  let halfWidth = 0;
+  let raf: number;
+
+  let isDragging = false;
+  let isHovered = false;
+  let dragMoved = false;
+  let dragStartX = 0;
+  let dragStartScrollX = 0;
+
+  function wrap(x: number) {
+    // Keep scrollX in (-halfWidth, 0]
+    x = x % halfWidth;
+    if (x > 0) x -= halfWidth;
+    return x;
   }
 
-  function close() {
-    lightboxSrc = null;
+  onMount(() => {
+    // Shuffle in onMount to avoid SSR/client hydration mismatch.
+    for (let i = photos.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [photos[i], photos[j]] = [photos[j], photos[i]];
+    }
+    photos = photos; // trigger reactivity
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const SPEED = prefersReducedMotion ? 0 : 0.3;
+    halfWidth = track.scrollWidth / 2;
+
+    function animate() {
+      if (!isDragging && !isHovered) {
+        scrollX -= SPEED;
+        scrollX = wrap(scrollX);
+      }
+      track.style.transform = `translateX(${scrollX}px)`;
+      raf = requestAnimationFrame(animate);
+    }
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  });
+
+  function startDrag(clientX: number) {
+    isDragging = true;
+    dragMoved = false;
+    dragStartX = clientX;
+    dragStartScrollX = scrollX;
   }
 
-  function onKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') close();
+  function moveDrag(clientX: number) {
+    if (!isDragging) return;
+    const delta = clientX - dragStartX;
+    if (Math.abs(delta) > 4) dragMoved = true;
+    scrollX = wrap(dragStartScrollX + delta);
+  }
+
+  function endDrag() { isDragging = false; }
+
+  function tryOpen(src: string) {
+    if (!dragMoved) lightboxSrc = src;
   }
 </script>
 
-<svelte:window on:keydown={onKeydown} />
+<svelte:window
+  on:keydown={onKeydown}
+  on:mousemove={(e) => moveDrag(e.clientX)}
+  on:mouseup={endDrag}
+/>
 
 <section class="strip" aria-label="Photo strip">
-  <div class="viewport">
-    <div class="track">
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div
+    class="viewport"
+    class:dragging={isDragging}
+    on:mouseenter={() => (isHovered = true)}
+    on:mouseleave={() => { isHovered = false; endDrag(); }}
+    on:mousedown|preventDefault={(e) => startDrag(e.clientX)}
+    on:touchstart|passive={(e) => startDrag(e.touches[0].clientX)}
+    on:touchmove|preventDefault={(e) => moveDrag(e.touches[0].clientX)}
+    on:touchend={endDrag}
+  >
+    <div class="track" bind:this={track}>
       {#each [...photos, ...photos] as src, i}
         <figure
           class="polaroid"
@@ -48,8 +117,8 @@
           role="button"
           tabindex="0"
           aria-label="Enlarge photo"
-          on:click={() => open(src)}
-          on:keydown={(e) => e.key === 'Enter' && open(src)}
+          on:click={() => tryOpen(src)}
+          on:keydown={(e) => e.key === 'Enter' && tryOpen(src)}
         >
           <span class="tape" />
           <img src="{base}/img/{src}" alt="" loading="lazy" />
@@ -82,34 +151,17 @@
   .viewport {
     overflow: hidden;
     width: 100%;
+    cursor: grab;
+    user-select: none;
+  }
+  .viewport.dragging {
+    cursor: grabbing;
   }
   .track {
     display: flex;
     gap: 22px;
     width: max-content;
     padding: 10px 22px;
-    animation: scroll 90s linear infinite;
-  }
-  .viewport:hover .track,
-  .viewport:focus-within .track {
-    animation-play-state: paused;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .track {
-      animation: none;
-    }
-    .viewport {
-      overflow-x: auto;
-    }
-  }
-
-  @keyframes scroll {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
   }
 
   .polaroid {
@@ -135,6 +187,7 @@
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border: 2px solid var(--ink);
+    pointer-events: none;
   }
   .tape {
     position: absolute;
@@ -163,6 +216,7 @@
     object-fit: contain;
     border: 4px solid #fff;
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+    pointer-events: auto;
   }
   .close {
     position: absolute;
